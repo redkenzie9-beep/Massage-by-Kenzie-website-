@@ -1,276 +1,168 @@
-<p id="currencyStatus">
-Select your country to view local prices.
-</p>
-// PREMIUM MASSAGE PRICES IN USD
-const rates = {
-  "Relaxation & Traditional": 150,
-  "Asian & Traditional": 180,
-  "Specialty & Luxury": 250,
-  "Sports & Recovery": 200,
-  "Beauty & Body": 175,
-  "Regional & Indigenous": 180
-};
-
-// Special premium service prices
-const specialRates = {
-  "Tantra Massage": 300,
-  "Nuru Massage": 350,
-  "Four-Hand Massage": 400,
-  "Couples Massage": 300
-};
-
-// COUNTRY AND CURRENCY DATABASE
-const countryCurrencies = {
-  US:["USD","$"], GB:["GBP","£"],
-  NG:["NGN","₦"], CA:["CAD","C$"],
-  AU:["AUD","A$"], DE:["EUR","€"],
-  FR:["EUR","€"], IT:["EUR","€"],
-  ES:["EUR","€"], NL:["EUR","€"],
-  BE:["EUR","€"], IE:["EUR","€"],
-  PT:["EUR","€"], AT:["EUR","€"],
-  FI:["EUR","€"], GR:["EUR","€"],
-  CH:["CHF","CHF"], JP:["JPY","¥"],
-  CN:["CNY","¥"], IN:["INR","₹"],
-  ZA:["ZAR","R"], GH:["GHS","GH₵"],
-  AE:["AED","AED"], SA:["SAR","SAR"],
-  BR:["BRL","R$"], MX:["MXN","MX$"],
-  TR:["TRY","₺"], SE:["SEK","kr"],
-  NO:["NOK","kr"], DK:["DKK","kr"],
-  NZ:["NZD","NZ$"], SG:["SGD","S$"],
-  HK:["HKD","HK$"], KR:["KRW","₩"],
-  KE:["KES","KSh"], UG:["UGX","USh"],
-  TZ:["TZS","TSh"], RW:["RWF","RF"],
-  EG:["EGP","E£"], MA:["MAD","DH"],
-  PK:["PKR","Rs"], BD:["BDT","৳"],
-  ID:["IDR","Rp"], MY:["MYR","RM"],
-  TH:["THB","฿"], PH:["PHP","₱"],
-  VN:["VND","₫"], AR:["ARS","$"],
-  CL:["CLP","$"], CO:["COP","$"],
-  PE:["PEN","S/"], PL:["PLN","zł"],
-  CZ:["CZK","Kč"], HU:["HUF","Ft"],
-  RO:["RON","lei"], BG:["BGN","лв"],
-  IS:["ISK","kr"], IL:["ILS","₪"],
-  QA:["QAR","QR"], KW:["KWD","KD"],
-  BH:["BHD","BD"], OM:["OMR","OMR"]
-};
-
-// Exchange rate cache
-let exchangeRates = {};
-let currentCurrency = "USD";
-let currentSymbol = "$";
-
-async function updateCurrency(countryCode) {
-  const currency = countryCurrencies[countryCode];
-
-  if (!currency) {
-    alert("Currency not listed. Please contact us.");
-    return;
-  }
-
-  currentCurrency = currency[0];
-  currentSymbol = currency[1];
-
-  try {
-    const response = await fetch(
-      `https://open.er-api.com/v6/latest/USD`
-    );
-
-    if (!response.ok) throw new Error("Rate unavailable");
-
-    const data = await response.json();
-
-    if (data.result !== "success") throw new Error("Rate unavailable");
-
-    exchangeRates = data.rates;
-
-    document.getElementById("currencyStatus").textContent =
-      "Prices displayed in " + currentCurrency;
-
-    updatePrice();
-
-  } catch(error) {
-    document.getElementById("currencyStatus").textContent =
-      "Currency conversion unavailable. Showing USD prices.";
-    currentCurrency = "USD";
-    currentSymbol = "$";
-    updatePrice();
-  }
-}
-
-function updatePrice() {
-  const selected = services.find(
-    service => service[1] === massage.value
-  );
-
-  if (!selected) return;
-
-  const basePrice =
-    specialRates[selected[1]] || rates[selected[0]];
-
-  const minutes = Number(duration.value);
-
-  const durationMultiplier = {
-    30: 0.60,
-    60: 1,
-    90: 1.40,
-    120: 1.80
-  };
-
-  const usdPrice = basePrice * durationMultiplier[minutes];
-
-  const exchangeRate = exchangeRates[currentCurrency] || 1;
-
-  const localPrice = usdPrice * exchangeRate;
-
-  document.getElementById("total").textContent =
-    new Intl.NumberFormat("en", {
-      style: "currency",
-      currency: currentCurrency
-    }).format(localPrice);
-
-  document.getElementById("selectedName").textContent =
-    selected[1];
-
-  document.getElementById("selectedDuration").textContent =
-    minutes + " minutes";
-}
-
-// Connect country selection to currency
-document.getElementById("country").addEventListener(
-  "change", function() {
-    updateCurrency(this.value);
-  }
-);
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#49332c">
 <title>Kenzy Massage & Wellness</title>
 
 <style>
 :root {
- --primary:#795448;
- --accent:#c49b85;
- --light:#fff8f3;
- --dark:#30231f;
+  --primary:#795448;
+  --gold:#c49b85;
+  --light:#fff8f3;
+  --dark:#30231f;
 }
 * {box-sizing:border-box}
 body {
- margin:0;
- font-family:Arial,sans-serif;
- background:var(--light);
- color:var(--dark);
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:var(--light);
+  color:var(--dark);
 }
 header {
- background:linear-gradient(120deg,#49332c,#987365);
- color:white;
- text-align:center;
- padding:65px 20px;
+  background:linear-gradient(130deg,#39251f,#987365);
+  color:white;
+  text-align:center;
+  padding:65px 20px;
 }
-header h1 {font-size:36px;margin:0 0 12px}
+header h1 {
+  font-size:42px;
+  letter-spacing:5px;
+  margin:0;
+}
+header h2 {font-weight:normal}
 header p {line-height:1.7}
 nav {
- background:white;
- padding:16px;
- text-align:center;
- position:sticky;
- top:0;
- z-index:5;
- box-shadow:0 2px 8px #0001;
+  background:white;
+  padding:17px 8px;
+  text-align:center;
+  position:sticky;
+  top:0;
+  z-index:10;
+  box-shadow:0 2px 8px #0001;
 }
 nav a {
- color:var(--primary);
- text-decoration:none;
- margin:0 12px;
- font-weight:bold;
+  display:inline-block;
+  color:var(--primary);
+  text-decoration:none;
+  margin:5px 9px;
+  font-weight:bold;
+  font-size:14px;
 }
 .container {
- max-width:950px;
- margin:auto;
- padding:25px 18px;
+  max-width:1050px;
+  margin:auto;
+  padding:25px 17px;
 }
 .section-title {
- text-align:center;
- color:var(--primary);
- margin:35px 0 10px;
+  text-align:center;
+  color:var(--primary);
+  margin:38px 0 12px;
 }
 .intro {
- text-align:center;
- line-height:1.8;
- max-width:650px;
- margin:15px auto 30px;
+  text-align:center;
+  line-height:1.8;
+  max-width:700px;
+  margin:15px auto 30px;
 }
 .card {
- background:white;
- border-radius:14px;
- padding:24px;
- margin:20px 0;
- box-shadow:0 3px 14px #0000000c;
+  background:white;
+  border-radius:14px;
+  padding:24px;
+  margin:20px 0;
+  box-shadow:0 3px 14px #0000000c;
 }
 label {
- display:block;
- font-weight:bold;
- margin:17px 0 8px;
+  display:block;
+  font-weight:bold;
+  margin:17px 0 8px;
 }
 input,select,textarea {
- width:100%;
- padding:14px;
- border:1px solid #ddd;
- border-radius:8px;
- background:white;
- font-size:15px;
+  width:100%;
+  padding:14px;
+  border:1px solid #ddd;
+  border-radius:8px;
+  background:white;
+  font-size:15px;
+}
+input:focus,select:focus,textarea:focus {
+  outline:2px solid var(--gold);
+  border-color:var(--primary);
 }
 button,.contact-link {
- display:block;
- width:100%;
- border:0;
- padding:15px;
- margin-top:18px;
- border-radius:8px;
- background:var(--primary);
- color:white;
- font-size:16px;
- text-align:center;
- text-decoration:none;
- cursor:pointer;
+  display:block;
+  width:100%;
+  border:0;
+  padding:15px;
+  margin-top:15px;
+  border-radius:8px;
+  background:var(--primary);
+  color:white;
+  font-size:15px;
+  text-align:center;
+  text-decoration:none;
+  cursor:pointer;
 }
 button:hover,.contact-link:hover {
- background:#52382f;
+  background:#52382f;
 }
-.price-box {
- background:#f7eee8;
- padding:20px;
- border-radius:10px;
- margin-top:20px;
-}
-.price {
- color:var(--primary);
- font-size:28px;
- font-weight:bold;
-}
-.small {font-size:13px;color:#777}
 .services-grid {
- display:grid;
- grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
- gap:15px;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:15px;
 }
 .service-card {
- background:white;
- padding:18px;
- border-radius:12px;
- border:1px solid #eee;
+  background:white;
+  padding:19px;
+  border-radius:12px;
+  border:1px solid #eee;
 }
 .service-card h3 {color:var(--primary)}
+.service-card p {
+  font-size:13px;
+  line-height:1.7;
+}
+.price-box {
+  background:#f7eee8;
+  padding:20px;
+  border-radius:10px;
+  margin-top:22px;
+}
+.price {
+  color:var(--primary);
+  font-size:30px;
+  font-weight:bold;
+}
+.small {
+  font-size:12px;
+  color:#777;
+  line-height:1.6;
+}
+.status {
+  font-size:13px;
+  color:var(--primary);
+  margin-top:10px;
+}
+#bookingResult {
+  display:none;
+  border:1px solid var(--gold);
+  overflow-wrap:anywhere;
+}
 footer {
- background:#392923;
- color:white;
- padding:35px 20px;
- text-align:center;
- line-height:1.9;
+  background:#392923;
+  color:white;
+  padding:35px 20px;
+  text-align:center;
+  line-height:1.9;
 }
 footer a {color:#f1cdb7}
+@media(max-width:500px) {
+  header h1 {font-size:34px}
+  .card {padding:17px}
+  nav a {font-size:12px;margin:5px}
+}
 </style>
 </head>
 
@@ -284,72 +176,79 @@ footer a {color:#f1cdb7}
 </header>
 
 <nav>
-<a href="#home">Home</a>
-<a href="#services">Services</a>
-<a href="#booking">Book Now</a>
-<a href="#contact">Contact</a>
+<a href="#home">HOME</a>
+<a href="#services">SERVICES</a>
+<a href="#booking">BOOK NOW</a>
+<a href="#contact">CONTACT</a>
 </nav>
 
-<div class="container" id="home">
+<main class="container" id="home">
 
 <h2 class="section-title">Welcome to Kenzy</h2>
 <p class="intro">
-Discover a selection of professional massage and wellness
-treatments designed to help you relax, recharge and feel
-your best. Choose your preferred service and reserve
-your appointment.
+Discover a world of massage and wellness treatments.
+Choose your preferred service, select your appointment
+date and enjoy a personalized booking experience.
 </p>
 
 <h2 class="section-title" id="services">Our Massage Services</h2>
+<p class="intro">
+Explore our six service collections and discover the
+treatment that suits your preferences.
+</p>
 
 <div class="services-grid" id="serviceCards"></div>
 
 <h2 class="section-title" id="booking">Book Your Appointment</h2>
 
 <div class="card">
-
 <form id="bookingForm">
 
-<label>Your Full Name</label>
-<input id="name" required placeholder="Enter your name">
+<label for="name">Full Name</label>
+<input id="name" required placeholder="Enter your full name">
 
-<label>Email Address</label>
-<input id="email" type="email" required placeholder="Your email">
+<label for="email">Email Address</label>
+<input id="email" type="email" required placeholder="Enter your email">
 
-<label>Country</label>
-<input id="country" required placeholder="Enter your country">
+<label for="country">Select Your Country</label>
+<select id="country" required>
+<option value="">Loading countries...</option>
+</select>
+<p id="currencyStatus" class="status">
+Select your country to view local prices.
+</p>
 
-<label>State / City</label>
+<label for="location">State / Province / City</label>
 <input id="location" required placeholder="Enter your state or city">
 
-<label>Select Massage Category</label>
+<label for="category">Massage Category</label>
 <select id="category">
 <option value="">All categories</option>
-<option>Relaxation & Traditional</option>
-<option>Asian & Traditional</option>
-<option>Specialty & Luxury</option>
-<option>Sports & Recovery</option>
-<option>Beauty & Body</option>
-<option>Regional & Indigenous</option>
+<option value="Relaxation & Traditional">Relaxation & Traditional</option>
+<option value="Asian & Traditional">Asian & Traditional</option>
+<option value="Specialty & Luxury">Specialty & Luxury</option>
+<option value="Sports & Recovery">Sports & Recovery</option>
+<option value="Beauty & Body">Beauty & Body</option>
+<option value="Regional & Indigenous">Regional & Indigenous</option>
 </select>
 
-<label>Select Massage Service</label>
+<label for="massage">Choose Your Massage</label>
 <select id="massage" required>
 <option value="">Choose a massage</option>
 </select>
 
-<label>Session Duration</label>
-<select id="duration" required>
+<label for="duration">Session Duration</label>
+<select id="duration">
 <option value="30">30 Minutes</option>
 <option value="60" selected>60 Minutes</option>
 <option value="90">90 Minutes</option>
 <option value="120">120 Minutes</option>
 </select>
 
-<label>Appointment Date</label>
+<label for="date">Appointment Date</label>
 <input type="date" id="date" required>
 
-<label>Appointment Time</label>
+<label for="time">Appointment Time</label>
 <select id="time" required>
 <option value="">Choose a time</option>
 <option>08:00 AM</option>
@@ -366,58 +265,134 @@ your appointment.
 <option>07:00 PM</option>
 </select>
 
-<label>Additional Information</label>
+<label for="notes">Additional Information</label>
 <textarea id="notes" rows="4"
-placeholder="Any preferences or information we should know?"></textarea>
+placeholder="Share any preferences or booking information"></textarea>
 
 <div class="price-box">
-<p>Selected Service: <strong id="selectedName">Not selected</strong></p>
-<p>Duration: <strong id="selectedDuration">60 minutes</strong></p>
-<p>Session Rate:</p>
-<div class="price" id="total">$60.00</div>
-<p class="small">Sample rates in USD. Final booking and availability must be confirmed.</p>
+<p>Selected Service:
+<strong id="selectedName">Not selected</strong></p>
+
+<p>Session Duration:
+<strong id="selectedDuration">60 minutes</strong></p>
+
+<p>Estimated Session Price:</p>
+<div class="price" id="total">$0.00</div>
+
+<p class="small">
+Prices are estimates based on the displayed USD base rates
+and available exchange rates. Final price and appointment
+availability must be confirmed before booking.
+</p>
 </div>
 
-<button type="submit">Submit Booking Request</button>
+<p id="formStatus" class="status"></p>
+
+<button type="submit">Continue to Booking Confirmation</button>
 
 </form>
+</div>
+
+<div class="card" id="bookingResult">
+<h2 class="section-title">Booking Request Summary</h2>
+<p id="bookingSummary"></p>
+
+<button type="button" id="copyBooking">
+Copy Booking Details
+</button>
+
+<p class="small">
+Please send your booking details through one of the
+private contact platforms below. Your appointment is
+not confirmed until Kenzy approves it.
+</p>
+
+<a class="contact-link"
+href="https://services.zangi.com/dl/conversation/7836541374"
+target="_blank" rel="noopener">
+Continue on Zangi
+</a>
+
+<a class="contact-link"
+href="https://t.me/KenzyRedHi"
+target="_blank" rel="noopener">
+Continue on Telegram
+</a>
 </div>
 
 <div class="card" id="contact">
 <h2 class="section-title">Private Correspondence</h2>
 <p class="intro">
-For private inquiries and appointment arrangements,
-contact Kenzy through the platforms below.
+For private inquiries, service information and appointment
+arrangements, contact Kenzy through the platforms below.
 </p>
 
 <a class="contact-link"
 href="https://services.zangi.com/dl/conversation/7836541374"
-target="_blank">
-Contact on Zangi
+target="_blank" rel="noopener">
+Contact Me on Zangi
 </a>
 
 <a class="contact-link"
 href="https://t.me/KenzyRedHi"
-target="_blank">
-Contact on Telegram
+target="_blank" rel="noopener">
+Message Me on Telegram
 </a>
-<p style="text-align:center">
+
+<p style="text-align:center;line-height:2">
 Zangi: 7836541374<br>
 Telegram: @KenzyRedHi
 </p>
 </div>
 
-</div>
+</main>
 
 <footer>
 <h2>KENZY MASSAGE & WELLNESS</h2>
-<p>Professional care. Relaxation. Wellness.</p>
+<p>Professional care • Relaxation • Wellness</p>
 <p>Appointments are subject to confirmation.</p>
 <p>© 2026 Kenzy. All Rights Reserved.</p>
 </footer>
 
 <script>
+
+// =====================================
+// 1. PREMIUM MASSAGE PRICES IN USD
+// =====================================
+
+const rates = {
+"Relaxation & Traditional":150,
+"Asian & Traditional":180,
+"Specialty & Luxury":250,
+"Sports & Recovery":200,
+"Beauty & Body":175,
+"Regional & Indigenous":180
+};
+
+// Individual premium service prices
+
+const specialRates = {
+"Tantra Massage":300,
+"Nuru Massage":350,
+"Four-Hand Massage":400,
+"Couples Massage":300
+};
+
+// Duration multipliers
+
+const durationMultipliers = {
+30:0.60,
+60:1,
+90:1.40,
+120:1.80
+};
+
+// =====================================
+// 2. ALL 90 MASSAGE SERVICES
+// =====================================
+
 const services = [
+
 ["Relaxation & Traditional","Swedish Massage"],
 ["Relaxation & Traditional","Relaxation Massage"],
 ["Relaxation & Traditional","Aromatherapy Massage"],
@@ -427,6 +402,444 @@ const services = [
 ["Relaxation & Traditional","Back, Neck & Shoulder Massage"],
 ["Relaxation & Traditional","Head & Scalp Massage"],
 ["Relaxation & Traditional","Foot Massage"],
+["Relaxation & Traditional","Hand Massage"],
+["Relaxation & Traditional","Sports Massage"],
+["Relaxation & Traditional","Chair Massage"],
+["Relaxation & Traditional","Trigger Point Massage"],
+["Relaxation & Traditional","Myofascial Release Massage"],
+["Relaxation & Traditional","Therapeutic Massage"],
+
+["Asian & Traditional","Thai Massage"],
+["Asian & Traditional","Shiatsu Massage"],
+["Asian & Traditional","Tui Na Massage"],
+["Asian & Traditional","Balinese Massage"],
+["Asian & Traditional","Japanese Anma Massage"],
+["Asian & Traditional","Ayurvedic Massage"],
+["Asian & Traditional","Abhyanga Massage"],
+["Asian & Traditional","Indian Head Massage"],
+["Asian & Traditional","Thai Herbal Compress Massage"],
+["Asian & Traditional","Amma Massage"],
+["Asian & Traditional","Tok Sen Massage"],
+["Asian & Traditional","Lomi Lomi Massage"],
+["Asian & Traditional","Hawaiian Massage"],
+["Asian & Traditional","Korean Massage"],
+["Asian & Traditional","Traditional Chinese Massage"],
+
+["Specialty & Luxury","Tantra Massage"],
+["Specialty & Luxury","Nuru Massage"],
+["Specialty & Luxury","Four-Hand Massage"],
+["Specialty & Luxury","Couples Massage"],
+["Specialty & Luxury","Chocolate Massage"],
+["Specialty & Luxury","Coffee Massage"],
+["Specialty & Luxury","Candle Massage"],
+["Specialty & Luxury","Milk & Honey Massage"],
+["Specialty & Luxury","Bamboo Massage"],
+["Specialty & Luxury","Sandalwood Massage"],
+["Specialty & Luxury","Gold Massage"],
+["Specialty & Luxury","Jade Stone Massage"],
+["Specialty & Luxury","Himalayan Salt Stone Massage"],
+["Specialty & Luxury","Ice Massage"],
+["Specialty & Luxury","Sound Therapy Massage"],
+
+["Sports & Recovery","Athletic Recovery Massage"],
+["Sports & Recovery","Pre-Event Sports Massage"],
+["Sports & Recovery","Post-Event Sports Massage"],
+["Sports & Recovery","Compression Massage"],
+["Sports & Recovery","Lymphatic Drainage Massage"],
+["Sports & Recovery","Cupping Massage"],
+["Sports & Recovery","Gua Sha Massage"],
+["Sports & Recovery","Reflexology"],
+["Sports & Recovery","Prenatal Massage"],
+["Sports & Recovery","Postnatal Massage"],
+["Sports & Recovery","Pregnancy-Safe Relaxation Massage"],
+["Sports & Recovery","Rehabilitation Massage"],
+["Sports & Recovery","Manual Lymphatic Therapy"],
+["Sports & Recovery","Stretching Massage"],
+["Sports & Recovery","Percussion Massage"],
+
+["Beauty & Body","Facial Massage"],
+["Beauty & Body","Kobido Facial Massage"],
+["Beauty & Body","Buccal Facial Massage"],
+["Beauty & Body","Anti-Cellulite Massage"],
+["Beauty & Body","Body Sculpting Massage"],
+["Beauty & Body","Slimming Massage"],
+["Beauty & Body","Detox Massage"],
+["Beauty & Body","Exfoliating Body Massage"],
+["Beauty & Body","Hot Oil Massage"],
+["Beauty & Body","Herbal Oil Massage"],
+["Beauty & Body","Scalp & Hair Massage"],
+["Beauty & Body","Foot Reflexology"],
+["Beauty & Body","Abdominal Massage"],
+["Beauty & Body","Dry Brushing Treatment"],
+["Beauty & Body","Body Polish Treatment"],
+
+["Regional & Indigenous","African Traditional Massage"],
+["Regional & Indigenous","Moroccan Hammam Massage"],
+["Regional & Indigenous","Turkish Massage"],
+["Regional & Indigenous","Russian Sports Massage"],
+["Regional & Indigenous","Egyptian Herbal Massage"],
+["Regional & Indigenous","Polynesian Massage"],
+["Regional & Indigenous","Hawaiian Lomilomi"],
+["Regional & Indigenous","Tibetan Ku Nye Massage"],
+["Regional & Indigenous","Filipino Hilot Massage"],
+["Regional & Indigenous","Indonesian Javanese Massage"],
+["Regional & Indigenous","Burmese Traditional Massage"],
+["Regional & Indigenous","Vietnamese Massage"],
+["Regional & Indigenous","Cambodian Khmer Massage"],
+["Regional & Indigenous","Nepalese Traditional Massage"]
+
+];
+
+// =====================================
+// 3. WEBSITE ELEMENTS
+// =====================================
+
+const countrySelect = document.getElementById("country");
+const categorySelect = document.getElementById("category");
+const massageSelect = document.getElementById("massage");
+const durationSelect = document.getElementById("duration");
+
+let exchangeRates = {};
+let currentCurrency = "USD";
+let currentCountry = "";
+let exchangeLoaded = false;
+let latestBookingText = "";
+
+// =====================================
+// 4. COUNTRY AND CURRENCY DATABASE
+// =====================================
+
+async function loadCountries() {
+
+ countrySelect.innerHTML =
+ '<option value="">Loading countries...</option>';
+
+ try {
+
+  const response = await fetch(
+   "https://restcountries.com/v3.1/all?fields=name,cca2,currencies"
+  );
+
+  if(!response.ok) throw new Error("Country database unavailable");
+
+  const data = await response.json();
+
+  data.sort((a,b) =>
+   a.name.common.localeCompare(b.name.common)
+  );
+
+  countrySelect.innerHTML =
+   '<option value="">Select your country</option>';
+
+  data.forEach(item => {
+
+   const currencyCodes =
+    Object.keys(item.currencies || {});
+
+   if(!item.cca2 || !currencyCodes.length) return;
+
+   const option = document.createElement("option");
+
+   option.value = item.cca2;
+   option.textContent = item.name.common;
+
+   option.dataset.currency = currencyCodes[0];
+
+   countrySelect.appendChild(option);
+
+  });
+
+  document.getElementById("currencyStatus").textContent =
+   "Select your country to display local prices.";
+
+ } catch(error) {
+
+  countrySelect.innerHTML =
+   '<option value="">Country list unavailable</option>';
+
+  document.getElementById("currencyStatus").textContent =
+   "Check your internet connection and refresh the page.";
+
+ }
+
+}
+
+// =====================================
+// 5. LOAD LIVE EXCHANGE RATES
+// =====================================
+
+async function loadExchangeRates() {
+
+ try {
+
+  document.getElementById("currencyStatus").textContent =
+   "Loading exchange rates...";
+
+  const response = await fetch(
+   "https://open.er-api.com/v6/latest/USD"
+  );
+
+  if(!response.ok) throw new Error("Exchange rate unavailable");
+
+  const data = await response.json();
+
+  if(data.result !== "success") {
+   throw new Error("Exchange rate unavailable");
+  }
+
+  exchangeRates = data.rates;
+  exchangeLoaded = true;
+
+  document.getElementById("currencyStatus").textContent =
+   currentCurrency === "USD"
+   ? "Prices displayed in USD."
+   : "Currency conversion ready: " + currentCurrency;
+
+  updatePrice();
+
+ } catch(error) {
+
+  exchangeLoaded = false;
+
+  document.getElementById("currencyStatus").textContent =
+   "Exchange rates unavailable. Prices will remain in USD.";
+
+  currentCurrency = "USD";
+
+  updatePrice();
+
+ }
+
+}
+
+// =====================================
+// 6. COUNTRY SELECTION
+// =====================================
+
+countrySelect.addEventListener("change",async function() {
+
+ const selected =
+  countrySelect.options[countrySelect.selectedIndex];
+
+ if(!selected || !selected.value) return;
+
+ const currency = selected.dataset.currency;
+
+ if(!currency) return;
+
+ currentCountry = selected.textContent;
+
+ currentCurrency = currency;
+
+ document.getElementById("currencyStatus").textContent =
+  "Selected currency: " + currency + ". Updating prices...";
+
+ if(!exchangeLoaded) {
+  await loadExchangeRates();
+ } else {
+  updatePrice();
+
+  document.getElementById("currencyStatus").textContent =
+   "Prices displayed in " + currency;
+ }
+
+});
+
+// =====================================
+// 7. MASSAGE CATEGORY FILTER
+// =====================================
+
+function fillServices() {
+
+ const selectedCategory = categorySelect.value;
+
+ massageSelect.innerHTML =
+  '<option value="">Choose a massage</option>';
+
+ services.forEach(([group,name]) => {
+
+  if(!selectedCategory || selectedCategory === group) {
+
+   const option = document.createElement("option");
+
+   option.value = name;
+   option.textContent = name;
+
+   massageSelect.appendChild(option);
+
+  }
+
+ });
+
+ updatePrice();
+
+}
+
+categorySelect.addEventListener("change",fillServices);
+
+massageSelect.addEventListener("change",updatePrice);
+
+durationSelect.addEventListener("change",updatePrice);
+
+// =====================================
+// 8. PRICE CALCULATOR
+// =====================================
+
+function updatePrice() {
+
+ const selected = services.find(
+  service => service[1] === massageSelect.value
+ );
+
+ const total = document.getElementById("total");
+
+ if(!selected) {
+
+  total.textContent = formatMoney(0,currentCurrency);
+
+  document.getElementById("selectedName").textContent =
+   "Not selected";
+
+  document.getElementById("selectedDuration").textContent =
+   durationSelect.value + " minutes";
+
+  return;
+
+ }
+
+ const basePrice =
+  specialRates[selected[1]] || rates[selected[0]];
+
+ const minutes = Number(durationSelect.value);
+
+ const usdPrice =
+  basePrice * durationMultipliers[minutes];
+
+ let localPrice = usdPrice;
+
+ if(currentCurrency !== "USD" && exchangeLoaded) {
+
+  const rate = exchangeRates[currentCurrency];
+
+  if(rate) {
+   localPrice = usdPrice * rate;
+  }
+
+ }
+
+ total.textContent = formatMoney(
+  localPrice,
+  currentCurrency
+ );
+
+ document.getElementById("selectedName").textContent =
+  selected[1];
+
+ document.getElementById("selectedDuration").textContent =
+  minutes + " minutes";
+
+}
+
+function formatMoney(amount,currency) {
+
+ try {
+
+  return new Intl.NumberFormat("en",{
+   style:"currency",
+   currency:currency
+  }).format(amount);
+
+ } catch(error) {
+
+  return currency + " " + amount.toFixed(2);
+
+ }
+
+}
+
+// =====================================
+// 9. DISPLAY SERVICE CATEGORIES
+// =====================================
+
+const cards = document.getElementById("serviceCards");
+
+const groups = {};
+
+services.forEach(([group,name]) => {
+
+ if(!groups[group]) groups[group] = [];
+
+ groups[group].push(name);
+
+});
+
+Object.entries(groups).forEach(([group,names]) => {
+
+ const card = document.createElement("div");
+
+ card.className = "service-card";
+
+ const heading = document.createElement("h3");
+
+ heading.textContent = group;
+
+ const list = document.createElement("p");
+
+ list.textContent = names.join(" • ");
+
+ const rate = document.createElement("strong");
+
+ rate.textContent = "From $" + rates[group] + " / hour";
+
+ card.appendChild(heading);
+ card.appendChild(list);
+ card.appendChild(rate);
+
+ cards.appendChild(card);
+
+});
+
+// =====================================
+// 10. APPOINTMENT DATE
+// =====================================
+
+const dateInput = document.getElementById("date");
+
+const today = new Date();
+
+const localToday = new Date(
+ today.getTime() - today.getTimezoneOffset() * 60000
+).toISOString().split("T")[0];
+
+dateInput.min = localToday;
+
+// =====================================
+// 11. BOOKING REQUEST
+// =====================================
+
+document.getElementById("bookingForm")
+.addEventListener("submit",function(event) {
+
+ event.preventDefault();
+
+ if(!countrySelect.value) {
+
+  alert("Please select your country.");
+
+  return;
+
+ }
+
+ if(!exchangeLoaded && currentCurrency !== "USD") {
+
+  alert("Currency rates are unavailable. Please try again.");
+
+  return;
+
+ }
+
+ const selected = services.find(
+  service => serviceraditional","Foot Massage"],
 ["Relaxation & Traditional","Hand Massage"],
 ["Relaxation & Traditional","Sports Massage"],
 ["Relaxation & Traditional","Chair Massage"],
@@ -1079,997 +1492,704 @@ Object.entries(categories).forEach(([category, services]) => {
   input,select,textarea{width:100%;padding:12px;border:1px solid #ddd;border-radius:10px;font-size:16px;background:#fafafa}
   textarea{height:100px;resize:vertical}
   .note{font-size:13px;color:#666;margin-top:8px}
-  @media(max-width:600px){.grid{grid-template-columns:1fr}.top h1{font-size:24px}}
-</style>
-</head>
-<body>
-
-<div class="top">
-  <h1>🌿 NYC Home Massage</h1>
-  <p>Professional Therapeutic Massage — Home Service Only<br>I come to your home, apartment, or hotel in New York City</p>
-  <div class="badge">Licensed • Private • Discreet</div>
-</div>
-
-<div class="container">
-
-  <h2>Welcome</h2>
-  <p>I provide professional, therapeutic massage in the comfort of your own space. Sessions are private, focused on relaxation, tension relief, and overall well-being. No studio visit required — I travel to you.</p>
-
-  <h2>Treatments</h2>
-  <div class="grid">
-    <div class="card">
-      <strong>Swedish Massage</strong>
-      Classic full-body relaxation using long, flowing strokes.
-    </div>
-    <div class="card">
-      <strong>Deep Tissue</strong>
-      Focused pressure for chronic tension and muscle knots.
-    </div>
-    <div class="card">
-      <strong>Sports / Recovery</strong>
-      Targeted work for athletes and active lifestyles.
-    </div>
-    <div class="card">
-      <strong>Relaxation / Stress Relief</strong>
-      Gentle, calming session to quiet the mind and body.
-    </div>
-  </div>
-
-  <h2>Price List (USD)</h2>
-  <table class="price-table">
-    <tr><th>Duration</th><th>Price</th></tr>
-    <tr><td>60 minutes</td><td class="price">$120</td></tr>
-    <tr><td>90 minutes</td><td class="price">$170</td></tr>
-    <tr><td>120 minutes</td><td class="price">$220</td></tr>
-  </table>
-  <div class="popular">
-    <strong>Most Popular</strong><br>
-    90-minute Deep Tissue or Swedish — $170
-  </div>
-  <p class="note">Prices include travel within most of Manhattan, Brooklyn, and Queens. Longer travel may have a small fee (confirmed in advance).</p>
-
-  <h2>Special Packages</h2>
-  <p>Looking for multiple sessions or a custom package? Message me with your preferred dates and goals and I’ll create a tailored plan for you.</p>
-
-  <h2>Book or Enquire</h2>
-  <a href="https://t.me/KenzyRedHi" class="btn" target="_blank">💬 Message on Telegram</a>
-  <a href="https://services.zangi.com/dl/conversation/7836541374" class="btn3" target="_blank">📱 Zangi (Private • Confidential)</a>
-  <p class="note center" style="margin-top:-4px;margin-bottom:16px">Zangi number: <strong>7836541374</strong> — for confidential correspondence and calls</p>
-
-  <h2>Appointment Request</h2>
-  <form onsubmit="handleSubmit(event)">
-    <div class="form-group">
-      <label>Your Name</label>
-      <input type="text" name="name" required placeholder="Full name">
-    </div>
-    <div class="form-group">
-      <label>Preferred Date & Time</label>
-      <input type="text" name="datetime" required placeholder="e.g. Sat 15 Nov, 3pm">
-    </div>
-    <div class="form-group">
-      <label>Service & Duration</label>
-      <select name="service" required>
-        <option value="">Select…</option>
-        <option>60 min Swedish – $120</option>
-        <option>90 min Swedish – $170</option>
-        <option>120 min Swedish – $220</option>
-        <option>60 min Deep Tissue – $120</option>
-        <option>90 min Deep Tissue – $170</option>
-        <option>120 min Deep Tissue – $220</option>
-        <option>Custom / Package</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label>Location (neighborhood or address)</label>
-      <input type="text" name="location" required placeholder="e.g. Upper East Side">
-    </div>
-    <div class="form-group">
-      <label>Notes / Special Requests</label>
-      <textarea name="notes" placeholder="Any preferences or health notes"></textarea>
-    </div>
-    <button type="submit" class="btn2" style="width:100%;border:none;cursor:pointer">Send Request</button>
-  </form>
-  <p class="note center" id="formMsg" style="display:none;color:#1a2e26;font-weight:600;margin-top:12px"></p>
-
-  <h2>Booking & Payment</h2>
-  <p>Full payment is required to confirm your appointment. Payment details (Zelle, Cash App, Venmo, or cash) will be sent once we confirm the time and location. No deposit system — full amount secures the booking.</p>
-
-  <h2>Cancellation & Refund Policy</h2>
-  <div class="policy">
-    <ul>
-      <li><strong>24-hour notice</strong> required for cancellations or rescheduling.</li>
-      <li>Cancellations made less than 24 hours before the appointment are non-refundable.</li>
-      <li>No-shows are charged the full session fee.</li>
-      <li>If I need to cancel for any reason, you will receive a full refund or priority rebooking.</li>
-    </ul>
-  </div>
-
-  <h2>Contact</h2>
-  <p class="center">
-    Fastest response: <a href="https://t.me/KenzyRedHi" target="_blank">Telegram</a> or <a href="https://services.zangi.com/dl/conversation/7836541374" target="_blank">Zangi</a><br>
-    Zangi private number: <strong>7836541374</strong>
-  </p>
-
-</div>
-
-<div class="footer">
-  NYC Home Massage • Professional therapeutic massage • Home service only<br>
-  This website is for informational and booking enquiry purposes.
-</div>
-
-<script>
-  function handleSubmit(e) {
-    e.preventDefault();
-    const form = e.target;
-    const data = new FormData(form);
-    const name = data.get('name');
-    const datetime = data.get('datetime');
-    const service = data.get('service');
-    const location = data.get('location');
-    const notes = data.get('notes') || 'None';
-
-    const msg = document.getElementById('formMsg');
-    msg.style.display = 'block';
-    msg.textContent = 'Thank you, ' + name + '! Your request has been noted. Please also message me on Telegram or Zangi to confirm.';
-
-    const text = encodeURIComponent(
-      `New booking request:\nName: ${name}\nDate/Time: ${datetime}\nService: ${service}\nLocation: ${location}\nNotes: ${notes}`
-    );
-    window.open('https://t.me/KenzyRedHi?text=' + text, '_blank');
-
-    form.reset();
-  }
-</script>
-</body>
-  </html><!DOCTYPE html>
+  @media(max-width:600px){.grid{grid-template-c
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>NYC Home Massage | Professional Therapeutic Massage</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KENZY | Massage & Wellness</title>
+
 <style>
-  *{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
-  body{background:#f7f3ee;color:#222;line-height:1.6}
-  .top{background:#1a2e26;color:#fff;padding:48px 20px 60px;text-align:center}
-  .top h1{font-size:28px;margin-bottom:8px;letter-spacing:-0.5px}
-  .top p{max-width:560px;margin:0 auto;opacity:0.9;font-size:15px}
-  .badge{display:inline-block;background:#c9a86a;color:#1a2e26;padding:6px 16px;border-radius:20px;font-weight:700;margin-top:16px;font-size:13px}
-  .container{max-width:640px;margin:-36px auto 40px;background:#fff;border-radius:20px;padding:28px 20px;box-shadow:0 12px 40px rgba(0,0,0,.08)}
-  h2{color:#1a2e26;margin:32px 0 14px;font-size:20px;border-left:5px solid #c9a86a;padding-left:12px}
-  h3{margin:18px 0 6px;font-size:17px}
-  .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
-  .card{background:#f7f3ee;padding:16px;border-radius:14px}
-  .card strong{display:block;margin-bottom:4px;color:#1a2e26}
-  .price-table{width:100%;border-collapse:collapse;margin-top:12px;font-size:15px}
-  .price-table td,.price-table th{padding:14px 12px;border-bottom:1px solid #eee;text-align:left}
-  .price-table th{background:#1a2e26;color:#fff}
-  .price{font-weight:700;color:#1a2e26;font-size:17px}
-  .popular{background:#fff8eb;border:2px solid #c9a86a;padding:16px;border-radius:14px;margin:16px 0;text-align:center}
-  .policy{background:#f0f7f2;padding:18px;border-radius:14px;font-size:14px}
-  .policy li{margin:8px 0 8px 18px}
-  .btn{display:block;text-align:center;background:#25D366;color:#fff;padding:16px;border-radius:14px;text-decoration:none;font-weight:700;font-size:17px;margin:18px 0 10px}
-  .btn2{display:block;text-align:center;background:#1a2e26;color:#fff;padding:15px;border-radius:14px;text-decoration:none;font-weight:700;margin-bottom:10px}
-  .btn3{display:block;text-align:center;background:#0088cc;color:#fff;padding:15px;border-radius:14px;text-decoration:none;font-weight:700;margin-bottom:10px}
-  .footer{text-align:center;padding:24px 16px 40px;color:#777;font-size:13px}
-  .center{text-align:center}
-  .form-group{margin-bottom:14px}
-  label{display:block;font-weight:600;margin-bottom:4px;font-size:14px}
-  input,select,textarea{width:100%;padding:12px;border:1px solid #ddd;border-radius:10px;font-size:16px;background:#fafafa}
-  textarea{height:100px;resize:vertical}
-  .note{font-size:13px;color:#666;margin-top:8px}
-  @media(max-width:600px){.grid{grid-template-columns:1fr}.top h1{font-size:24px}}
+:root {
+  --dark:#1a2e26;
+  --gold:#c9a86a;
+  --cream:#f7f3ee;
+  --white:#fff;
+}
+* {box-sizing:border-box}
+body {
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:var(--cream);
+  color:#292929;
+  line-height:1.6;
+}
+header {
+  background:linear-gradient(135deg,#1a2e26,#526b58);
+  color:white;
+  text-align:center;
+  padding:65px 20px;
+}
+header h1 {
+  font-size:42px;
+  letter-spacing:5px;
+  margin:0;
+}
+header p {margin:8px 0}
+.gold {color:var(--gold)}
+nav {
+  background:white;
+  padding:15px;
+  display:flex;
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:22px;
+  position:sticky;
+  top:0;
+  z-index:10;
+  box-shadow:0 2px 10px #0001;
+}
+nav a {
+  text-decoration:none;
+  color:var(--dark);
+  font-weight:bold;
+}
+.container {
+  max-width:1050px;
+  margin:auto;
+  padding:25px 18px;
+}
+h2.section-title {
+  color:var(--dark);
+  text-align:center;
+  margin:40px 0 10px;
+}
+.intro {
+  max-width:700px;
+  text-align:center;
+  margin:15px auto 30px;
+}
+.categories {
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:10px;
+  margin:25px 0;
+}
+.categories button {
+  background:white;
+  color:var(--dark);
+  border:1px solid #ddd;
+  padding:11px 16px;
+  border-radius:25px;
+  cursor:pointer;
+}
+.categories button.active {
+  background:var(--dark);
+  color:white;
+}
+.grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+  gap:18px;
+}
+.service-card {
+  background:white;
+  border-radius:14px;
+  padding:20px;
+  box-shadow:0 3px 14px #0000000c;
+  border:1px solid #eee;
+}
+.service-card h3 {color:var(--dark)}
+.service-card p {font-size:14px;color:#666}
+.service-card strong {color:#8b6740}
+button,.link-button {
+  cursor:pointer;
+  border:0;
+  border-radius:9px;
+  padding:13px 18px;
+  background:var(--dark);
+  color:white;
+  font-size:15px;
+  text-decoration:none;
+  display:inline-block;
+}
+.service-card button {width:100%;margin-top:12px}
+button:hover,.link-button:hover {opacity:.85}
+.card {
+  background:white;
+  border-radius:15px;
+  padding:25px;
+  margin:25px 0;
+  box-shadow:0 3px 15px #0000000b;
+}
+label {
+  display:block;
+  font-weight:bold;
+  margin:15px 0 6px;
+}
+input,select,textarea {
+  width:100%;
+  padding:13px;
+  border:1px solid #ddd;
+  border-radius:8px;
+  font-size:15px;
+  background:white;
+}
+.price-box {
+  background:#f5eee4;
+  border-radius:12px;
+  padding:18px;
+  margin-top:20px;
+}
+.price {
+  color:var(--dark);
+  font-size:30px;
+  font-weight:bold;
+}
+.modal {
+  display:none;
+  position:fixed;
+  inset:0;
+  background:#000b;
+  z-index:30;
+  overflow-y:auto;
+  padding:20px;
+}
+.modal-content {
+  max-width:650px;
+  background:white;
+  border-radius:16px;
+  margin:25px auto;
+  padding:25px;
+  position:relative;
+}
+.close {
+  position:absolute;
+  right:15px;
+  top:12px;
+  background:#eee;
+  color:#333;
+  font-size:20px;
+  padding:5px 13px;
+}
+.detail-label {color:var(--dark);font-weight:bold}
+.detail-price {
+  background:#f5eee4;
+  padding:15px;
+  border-radius:10px;
+  margin:15px 0;
+}
+.contact-link {
+  display:block;
+  text-align:center;
+  margin:12px 0;
+  padding:15px;
+  border-radius:9px;
+  background:var(--dark);
+  color:white;
+  text-decoration:none;
+  font-weight:bold;
+}
+.telegram {background:#168ac0}
+footer {
+  text-align:center;
+  background:var(--dark);
+  color:white;
+  padding:35px 15px;
+  margin-top:40px;
+}
+@media(max-width:500px) {
+  header h1 {font-size:34px}
+  nav {gap:12px}
+  .modal-content {padding:20px}
+}
 </style>
 </head>
-<body>
 
-<div class="top">
-  <h1>🌿 NYC Home Massage</h1>
-  <p>Professional Therapeutic Massage — Home Service Only<br>I come to your home, apartment, or hotel in New York City</p>
-  <div class="badge">Licensed • Private • Discreet</div>
-</div>
-
-<div class="container">
-
-  <h2>Welcome</h2>
-  <p>I provide professional, therapeutic massage in the comfort of your own space. Sessions are private, focused on relaxation, tension relief, and overall well-being. No studio visit required — I travel to you.</p>
-
-  <h2>Treatments</h2>
-  <div class="grid">
-    <div class="card">
-      <strong>Swedish Massage</strong>
-      Classic full-body relaxation using long, flowing strokes.
-    </div>
-    <div class="card">
-      <strong>Deep Tissue</strong>
-      Focused pressure for chronic tension and muscle knots.
-    </div>
-    <div class="card">
-      <strong>Sports / Recovery</strong>
-      Targeted work for athletes and active lifestyles.
-    </div>
-    <div class="card">
-      <strong>Relaxation / Stress Relief</strong>
-      Gentle, calming session to quiet the mind and body.
-    </div>
-  </div>
-
-  <h2>Price List (USD)</h2>
-  <table class="price-table">
-    <tr><th>Duration</th><th>Price</th></tr>
-    <tr><td>60 minutes</td><td class="price">$120</td></tr>
-    <tr><td>90 minutes</td><td class="price">$170</td></tr>
-    <tr><td>120 minutes</td><td class="price">$220</td></tr>
-  </table>
-  <div class="popular">
-    <strong>Most Popular</strong><br>
-    90-minute Deep Tissue or Swedish — $170
-  </div>
-  <p class="note">Prices include travel within most of Manhattan, Brooklyn, and Queens. Longer travel may have a small fee (confirmed in advance).</p>
-
-  <h2>Special Packages</h2>
-  <p>Looking for multiple sessions or a custom package? Message me with your preferred dates and goals and I’ll create a tailored plan for you.</p>
-
-  <h2>Book or Enquire</h2>
-  <a href="https://t.me/KenzyRedHi" class="btn" target="_blank">💬 Message on Telegram</a>
-  <a href="https://services.zangi.com/dl/conversation/7836541374" class="btn3" target="_blank">📱 Zangi (Private • Confidential)</a>
-  <p class="note center" style="margin-top:-4px;margin-bottom:16px">Zangi number: <strong>7836541374</strong> — for confidential correspondence and calls</p>
-
-  <h2>Appointment Request</h2>
-  <form onsubmit="handleSubmit(event)">
-    <div class="form-group">
-      <label>Your Name</label>
-      <input type="text" name="name" required placeholder="Full name">
-    </div>
-    <div class="form-group">
-      <label>Preferred Date & Time</label>
-      <input type="text" name="datetime" required placeholder="e.g. Sat 15 Nov, 3pm">
-    </div>
-    <div class="form-group">
-      <label>Service & Duration</label>
-      <select name="service" required>
-        <option value="">Select…</option>
-        <option>60 min Swedish – $120</option>
-        <option>90 min Swedish – $170</option>
-        <option>120 min Swedish – $220</option>
-        <option>60 min Deep Tissue – $120</option>
-        <option>90 min Deep Tissue – $170</option>
-        <option>120 min Deep Tissue – $220</option>
-        <option>Custom / Package</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label>Location (neighborhood or address)</label>
-      <input type="text" name="location" required placeholder="e.g. Upper East Side">
-    </div>
-    <div class="form-group">
-      <label>Notes / Special Requests</label>
-      <textarea name="notes" placeholder="Any preferences or health notes"></textarea>
-    </div>
-    <button type="submit" class="btn2" style="width:100%;border:none;cursor:pointer">Send Request</button>
-  </form>
-  <p class="note center" id="formMsg" style="display:none;color:#1a2e26;font-weight:600;margin-top:12px"></p>
-
-  <h2>Booking & Payment</h2>
-  <p>Full payment is required to confirm your appointment. Payment details (Zelle, Cash App, Venmo, or cash) will be sent once we confirm the time and location. No deposit system — full amount secures the booking.</p>
-
-  <h2>Cancellation & Refund Policy</h2>
-  <div class="policy">
-    <ul>
-      <li><strong>24-hour notice</strong> required for cancellations or rescheduling.</li>
-      <li>Cancellations made less than 24 hours before the appointment are non-refundable.</li>
-      <li>No-shows are charged the full session fee.</li>
-      <li>If I need to cancel for any reason, you will receive a full refund or priority rebooking.</li>
-    </ul>
-  </div>
-
-  <h2>Contact</h2>
-  <p class="center">
-    Fastest response: <a href="https://t.me/KenzyRedHi" target="_blank">Telegram</a> or <a href="https://services.zangi.com/dl/conversation/7836541374" target="_blank">Zangi</a><br>
-    Zangi private number: <strong>7836541374</strong>
-  </p>
-
-</div>
-
-<div class="footer">
-  NYC Home Massage • Professional therapeutic massage • Home service only<br>
-  This website is for informational and booking enquiry purposes.
-</div>
-
-<script>
-  function handleSubmit(e) {
-    e.preventDefault();
-    const form = e.target;
-    const data = new FormData(form);
-    const name = data.get('name');
-    const datetime = data.get('datetime');
-    const service = data.get('service');
-    const location = data.get('location');
-    const notes = data.get('notes') || 'None';
-
-    const msg = document.getElementById('formMsg');
-    msg.style.display = 'block';
-    msg.textContent = 'Thank you, ' + name + '! Your request has been noted. Please also message me on Telegram or Zangi to confirm.';
-
-    // Opens Telegram with a pre-filled booking message
-    const text = encodeURIComponent(
-      `New booking request:\nName: ${name}\nDate/Time: ${datetime}\nService: ${service}\nLocation: ${location}\nNotes: ${notes}`
-    );
-    window.open('https://t.me/KenzyRedHi?text=' + text, '_blank');
-
-    form.reset();
-  }
-</script>
-</body>
-  </html><!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>NYC Home Massage | Professional Therapeutic Massage</title>
-<style>
-  *{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
-  body{background:#f7f3ee;color:#222;line-height:1.6}
-  .top{background:#1a2e26;color:#fff;padding:48px 20px 60px;text-align:center}
-  .top h1{font-size:28px;margin-bottom:8px;letter-spacing:-0.5px}
-  .top p{max-width:560px;margin:0 auto;opacity:0.9;font-size:15px}
-  .badge{display:inline-block;background:#c9a86a;color:#1a2e26;padding:6px 16px;border-radius:20px;font-weight:700;margin-top:16px;font-size:13px}
-  .container{max-width:640px;margin:-36px auto 40px;background:#fff;border-radius:20px;padding:28px 20px;box-shadow:0 12px 40px rgba(0,0,0,.08)}
-  h2{color:#1a2e26;margin:32px 0 14px;font-size:20px;border-left:5px solid #c9a86a;padding-left:12px}
-  h3{margin:18px 0 6px;font-size:17px}
-  .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
-  .card{background:#f7f3ee;padding:16px;border-radius:14px}
-  .card strong{display:block;margin-bottom:4px;color:#1a2e26}
-  .price-table{width:100%;border-collapse:collapse;margin-top:12px;font-size:15px}
-  .price-table td,.price-table th{padding:14px 12px;border-bottom:1px solid #eee;text-align:left}
-  .price-table th{background:#1a2e26;color:#fff}
-  .price{font-weight:700;color:#1a2e26;font-size:17px}
-  .popular{background:#fff8eb;border:2px solid #c9a86a;padding:16px;border-radius:14px;margin:16px 0;text-align:center}
-  .policy{background:#f0f7f2;padding:18px;border-radius:14px;font-size:14px}
-  .policy li{margin:8px 0 8px 18px}
-  .btn{display:block;text-align:center;background:#25D366;color:#fff;padding:16px;border-radius:14px;text-decoration:none;font-weight:700;font-size:17px;margin:18px 0 10px}
-  .btn2{display:block;text-align:center;background:#1a2e26;color:#fff;padding:15px;border-radius:14px;text-decoration:none;font-weight:700;margin-bottom:10px}
-  .btn3{display:block;text-align:center;background:#0088cc;color:#fff;padding:15px;border-radius:14px;text-decoration:none;font-weight:700;margin-bottom:10px}
-  .footer{text-align:center;padding:24px 16px 40px;color:#777;font-size:13px}
-  .center{text-align:center}
-  .form-group{margin-bottom:14px}
-  label{display:block;font-weight:600;margin-bottom:4px;font-size:14px}
-  input,select,textarea{width:100%;padding:12px;border:1px solid #ddd;border-radius:10px;font-size:16px;background:#fafafa}
-  textarea{height:100px;resize:vertical}
-  .note{font-size:13px;color:#666;margin-top:8px}
-  @media(max-width:600px){.grid{grid-template-columns:1fr}.top h1{font-size:24px}}
-</style>
-</head>
-<body>
-
-<div class="top">
-  <h1>🌿 NYC Home Massage</h1>
-  <p>Professional Therapeutic Massage — Home Service Only<br>I come to your home, apartment, or hotel in New York City</p>
-  <div class="badge">Licensed • Private • Discreet</div>
-</div>
-
-<div class="container">
-
-  <h2>Welcome</h2>
-  <p>I provide professional, therapeutic massage in the comfort of your own space. Sessions are private, focused on relaxation, tension relief, and overall well-being. No studio visit required — I travel to you.</p>
-
-  <h2>Treatments</h2>
-  <div class="grid">
-    <div class="card">
-      <strong>Swedish Massage</strong>
-      Classic full-body relaxation using long, flowing strokes.
-    </div>
-    <div class="card">
-      <strong>Deep Tissue</strong>
-      Focused pressure for chronic tension and muscle knots.
-    </div>
-    <div class="card">
-      <strong>Sports / Recovery</strong>
-      Targeted work for athletes and active lifestyles.
-    </div>
-    <div class="card">
-      <strong>Relaxation / Stress Relief</strong>
-      Gentle, calming session to quiet the mind and body.
-    </div>
-  </div>
-
-  <h2>Price List (USD)</h2>
-  <table class="price-table">
-    <tr><th>Duration</th><th>Price</th></tr>
-    <tr><td>60 minutes</td><td class="price">$120</td></tr>
-    <tr><td>90 minutes</td><td class="price">$170</td></tr>
-    <tr><td>120 minutes</td><td class="price">$220</td></tr>
-  </table>
-  <div class="popular">
-    <strong>Most Popular</strong><br>
-    90-minute Deep Tissue or Swedish — $170
-  </div>
-  <p class="note">Prices include travel within most of Manhattan, Brooklyn, and Queens. Longer travel may have a small fee (confirmed in advance).</p>
-
-  <h2>Special Packages</h2>
-  <p>Looking for multiple sessions or a custom package? Message me with your preferred dates and goals and I’ll create a tailored plan for you.</p>
-
-  <h2>Book or Enquire</h2>
-  <a href="https://t.me/YOUR_TELEGRAM" class="btn" target="_blank">💬 Message on Telegram</a>
-  <a href="https://zangi.com/YOUR_ZANGI" class="btn3" target="_blank">📱 Message on Zangi</a>
-  <a href="mailto:yourbooking@email.com" class="btn2">✉️ Email Booking Request</a>
-
-  <h2>Appointment Request</h2>
-  <form onsubmit="handleSubmit(event)">
-    <div class="form-group">
-      <label>Your Name</label>
-      <input type="text" name="name" required placeholder="Full name">
-    </div>
-    <div class="form-group">
-      <label>Preferred Date & Time</label>
-      <input type="text" name="datetime" required placeholder="e.g. Sat 15 Nov, 3pm">
-    </div>
-    <div class="form-group">
-      <label>Service & Duration</label>
-      <select name="service" required>
-        <option value="">Select…</option>
-        <option>60 min Swedish – $120</option>
-        <option>90 min Swedish – $170</option>
-        <option>120 min Swedish – $220</option>
-        <option>60 min Deep Tissue – $120</option>
-        <option>90 min Deep Tissue – $170</option>
-        <option>120 min Deep Tissue – $220</option>
-        <option>Custom / Package</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label>Location (neighborhood or address)</label>
-      <input type="text" name="location" required placeholder="e.g. Upper East Side">
-    </div>
-    <div class="form-group">
-      <label>Notes / Special Requests</label>
-      <textarea name="notes" placeholder="Any preferences or health notes"></textarea>
-    </div>
-    <button type="submit" class="btn2" style="width:100%;border:none;cursor:pointer">Send Request</button>
-  </form>
-  <p class="note center" id="formMsg" style="display:none;color:#1a2e26;font-weight:600;margin-top:12px"></p>
-
-  <h2>Booking & Payment</h2>
-  <p>Full payment is required to confirm your appointment. Payment details (Zelle, Cash App, Venmo, or cash) will be sent once we confirm the time and location. No deposit system — full amount secures the booking.</p>
-
-  <h2>Cancellation & Refund Policy</h2>
-  <div class="policy">
-    <ul>
-      <li><strong>24-hour notice</strong> required for cancellations or rescheduling.</li>
-      <li>Cancellations made less than 24 hours before the appointment are non-refundable.</li>
-      <li>No-shows are charged the full session fee.</li>
-      <li>If I need to cancel for any reason, you will receive a full refund or priority rebooking.</li>
-    </ul>
-  </div>
-
-  <h2>Contact</h2>
-  <p class="center">For fastest response, use Telegram or Zangi.<br>
-  Email: <a href="mailto:yourbooking@email.com">yourbooking@email.com</a></p>
-
-</div>
-
-<div class="footer">
-  NYC Home Massage • Professional therapeutic massage • Home service only<br>
-  This website is for informational and booking enquiry purposes.
-</div>
-
-<script>
-  function handleSubmit(e) {
-    e.preventDefault();
-    const form = e.target;
-    const data = new FormData(form);
-    const name = data.get('name');
-    const datetime = data.get('datetime');
-    const service = data.get('service');
-    const location = data.get('location');
-    const notes = data.get('notes') || 'None';
-
-    // Simple client-side confirmation (no backend)
-    const msg = document.getElementById('formMsg');
-    msg.style.display = 'block';
-    msg.textContent = 'Thank you, ' + name + '! Your request has been noted. Please also message me on Telegram or Zangi to confirm.';
-
-    // Optional: open Telegram with pre-filled message
-    const text = encodeURIComponent(
-      `New booking request:\nName: ${name}\nDate/Time: ${datetime}\nService: ${service}\nLocation: ${location}\nNotes: ${notes}`
-    );
-    // Uncomment the line below and replace YOUR_TELEGRAM if you want the form to open Telegram automatically
-    // window.open('https://t.me/YOUR_TELEGRAM?text=' + text, '_blank');
-
-    form.reset();
-  }
-</script>
-</body>
-</html><!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Global Home Massage | USA • Canada • Germany</title>
-<style>
-  *{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
-  body{background:#f7f3ee;color:#222;line-height:1.6}
-  .top{background:#1a2e26;color:#fff;padding:48px 20px 60px;text-align:center}
-  .top h1{font-size:28px;margin-bottom:8px;letter-spacing:-0.5px}
-  .top p{max-width:560px;margin:0 auto;opacity:0.9;font-size:15px}
-  .badge{display:inline-block;background:#c9a86a;color:#1a2e26;padding:6px 16px;border-radius:20px;font-weight:700;margin-top:16px;font-size:13px}
-  .container{max-width:640px;margin:-36px auto 40px;background:#fff;border-radius:20px;padding:28px 20px;box-shadow:0 12px 40px rgba(0,0,0,.08)}
-  h2{color:#1a2e26;margin:32px 0 14px;font-size:20px;border-left:5px solid #c9a86a;padding-left:12px}
-  h3{margin:18px 0 6px;font-size:17px}
-  .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
-  .card{background:#f7f3ee;padding:16px;border-radius:14px}
-  .card strong{display:block;margin-bottom:4px;color:#1a2e26}
-  .region-tabs{display:flex;gap:8px;margin-bottom:16px}
-  .region-btn{flex:1;background:#f7f3ee;border:none;padding:10px;border-radius:10px;font-weight:600;cursor:pointer;color:#1a2e26;font-size:14px;transition:all 0.2s}
-  .region-btn.active{background:#1a2e26;color:#fff}
-  .region-content{display:none}
-  .region-content.active{display:block}
-  .price-table{width:100%;border-collapse:collapse;margin-top:12px;font-size:15px}
-  .price-table td,.price-table th{padding:14px 12px;border-bottom:1px solid #eee;text-align:left}
-  .price-table th{background:#1a2e26;color:#fff}
-  .price{font-weight:700;color:#1a2e26;font-size:17px}
-  .popular{background:#fff8eb;border:2px solid #c9a86a;padding:16px;border-radius:14px;margin:16px 0;text-align:center}
-  .policy{background:#f0f7f2;padding:18px;border-radius:14px;font-size:14px}
-  .policy li{margin:8px 0 8px 18px}
-  .btn{display:block;text-align:center;background:#25D366;color:#fff;padding:16px;border-radius:14px;text-decoration:none;font-weight:700;font-size:17px;margin:18px 0 10px}
-  .btn2{display:block;text-align:center;background:#1a2e26;color:#fff;padding:15px;border-radius:14px;text-decoration:none;font-weight:700;margin-bottom:10px}
-  .btn3{display:block;text-align:center;background:#0088cc;color:#fff;padding:15px;border-radius:14px;text-decoration:none;font-weight:700;margin-bottom:10px}
-  .footer{text-align:center;padding:24px 16px 40px;color:#777;font-size:13px}
-  .center{text-align:center}
-  .form-group{margin-bottom:14px}
-  label{display:block;font-weight:600;margin-bottom:4px;font-size:14px}
-  input,select,textarea{width:100%;padding:12px;border:1px solid #ddd;border-radius:10px;font-size:16px;background:#fafafa}
-  textarea{height:100px;resize:vertical}
-  .note{font-size:13px;color:#666;margin-top:8px}
-  @media(max-width:600px){.grid{grid-template-columns:1fr}.top h1{font-size:24px}}
-</style>
-</head>
-<body>
-
-<div class="top">
-  <h1>🌿 Global Home Massage</h1>
-  <p>Professional Therapeutic Massage — Home & Hotel Service Only<br>Serving USA, Canada, and Germany</p>
-  <div class="badge">Licensed • Private • Discreet</div>
-</div>
-
-<div class="container">
-
-  <h2>Welcome</h2>
-  <p>I provide professional, therapeutic massage in the comfort of your own space. Sessions are private, tailored to your physical needs, and fully mobile across major states, provinces, and federal states.</p>
-
-  <h2>All Treatment Types Offered</h2>
-  <div class="grid">
-    <div class="card">
-      <strong>Swedish Massage</strong>
-      Classic full-body relaxation using long, flowing strokes.
-    </div>
-    <div class="card">
-      <strong>Deep Tissue</strong>
-      Focused, deep pressure to release chronic muscle knots.
-    </div>
-    <div class="card">
-      <strong>Sports / Recovery</strong>
-      Targeted work designed for flexibility and athletic recovery.
-    </div>
-    <div class="card">
-      <strong>Aromatherapy</strong>
-      Relaxation enhanced with therapeutic essential oils.
-    </div>
-    <div class="card">
-      <strong>Trigger Point Therapy</strong>
-      Precision pressure to relieve specific pain points.
-    </div>
-    <div class="card">
-      <strong>Hot Stone Therapy</strong>
-      Warmed stones applied to melt deep-seated tension.
-    </div>
-    <div class="card">
-      <strong>Prenatal Massage</strong>
-      Safe, nurturing relief tailored for expecting mothers.
-    </div>
-    <div class="card">
-      <strong>Reflexology</strong>
-      Targeted pressure points on feet and hands for total calm.
-    </div>
-  </div>
-
-  <h2>Select Your Region & Coverage</h2>
-  
-  <div class="region-tabs">
-    <button class="region-btn active" onclick="switchRegion('usa', event)">🇺🇸 USA</button>
-    <button class="region-btn" onclick="switchRegion('canada', event)">🇨🇦 Canada</button>
-    <button class="region-btn" onclick="switchRegion('germany', event)">🇩🇪 Germany</button>
-  </div>
-
-  <!-- USA -->
-  <div id="usa" class="region-content active">
-    <table class="price-table">
-      <tr><th>Duration</th><th>Price (USD)</th></tr>
-      <tr><td>60 minutes</td><td class="price">$120</td></tr>
-      <tr><td>90 minutes</td><td class="price">$170</td></tr>
-      <tr><td>120 minutes</td><td class="price">$220</td></tr>
-    </table>
-    <div class="popular">
-      <strong>Most Popular (USA)</strong><br>
-      90-minute Deep Tissue or Swedish — $170
-    </div>
-    <p class="note"><strong>States & Territories Served:</strong> California (CA), New York (NY), Florida (FL), Texas (TX), Illinois (IL), Washington (WA), Massachusetts (MA), Nevada (NV), Colorado (CO), Georgia (GA), and surrounding major metropolitan zones.</p>
-  </div>
-
-  <!-- Canada -->
-  <div id="canada" class="region-content">
-    <table class="price-table">
-      <tr><th>Duration</th><th>Price (CAD)</th></tr>
-      <tr><td>60 minutes</td><td class="price">$160 CAD</td></tr>
-      <tr><td>90 minutes</td><td class="price">$225 CAD</td></tr>
-      <tr><td>120 minutes</td><td class="price">$290 CAD</td></tr>
-    </table>
-    <div class="popular">
-      <strong>Most Popular (Canada)</strong><br>
-      90-minute Deep Tissue or Swedish — $225 CAD
-    </div>
-    <p class="note"><strong>Provinces Served:</strong> Ontario (ON), British Columbia (BC), Quebec (QC), Alberta (AB), Nova Scotia (NS), and major surrounding cities.</p>
-  </div>
-
-  <!-- Germany -->
-  <div id="germany" class="region-content">
-    <table class="price-table">
-      <tr><th>Duration</th><th>Price (EUR)</th></tr>
-      <tr><td>60 minutes</td><td class="price">€110</td></tr>
-      <tr><td>90 minutes</td><td class="price">€155</td></tr>
-      <tr><td>120 minutes</td><td class="price">€200</td></tr>
-    </table>
-    <div class="popular">
-      <strong>Most Popular (Germany)</strong><br>
-      90-minute Deep Tissue or Swedish — €155
-    </div>
-    <p class="note"><strong>Federal States (Bundesländer) Served:</strong> Berlin, Bavaria (Bayern), North Rhine-Westphalia (Nordrhein-Westfalen), Baden-Württemberg, Hesse (Hessen), Hamburg, Saxony (Sachsen), and major city centres.</p>
-  </div>
-
-  <h2>Book or Enquire</h2>
-  <a href="https://t.me/KenzyRedHi" class="btn" target="_blank">💬 Message on Telegram</a>
-  <a href="https://services.zangi.com/dl/conversation/7836541374" class="btn3" target="_blank">📱 Zangi (Private • Confidential)</a>
-  <p class="note center" style="margin-top:-4px;margin-bottom:16px">Zangi number: <strong>7836541374</strong> — for confidential correspondence and calls</p>
-
-  <h2>Appointment Request</h2>
-  <form onsubmit="handleSubmit(event)">
-    <div class="form-group">
-      <label>Your Name</label>
-      <input type="text" name="name" required placeholder="Full name">
-    </div>
-    <div class="form-group">
-      <label>Country / Region</label>
-      <select name="country" required>
-        <option value="">Select country…</option>
-        <option>USA</option>
-        <option>Canada</option>
-        <option>Germany</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label>Preferred Date & Time</label>
-      <input type="text" name="datetime" required placeholder="e.g. Sat 15 Nov, 3pm">
-    </div>
-    <div class="form-group">
-      <label>Massage Type & Duration</label>
-      <select name="service" required>
-        <option value="">Select treatment type…</option>
-        <option>60 min Swedish</option>
-        <option>90 min Swedish</option>
-        <option>120 min Swedish</option>
-        <option>60 min Deep Tissue</option>
-        <option>90 min Deep Tissue</option>
-        <option>120 min Deep Tissue</option>
-        <option>Sports / Recovery</option>
-        <option>Aromatherapy</option>
-        <option>Trigger Point Therapy</option>
-        <option>Hot Stone Therapy</option>
-        <option>Prenatal Massage</option>
-        <option>Reflexology</option>
-        <option>Customized / Special Package</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label>Location (State / Province / City / Address)</label>
-      <input type="text" name="location" required placeholder="e.g. California (CA), Toronto ON, or Berlin">
-    </div>
-    <div class="form-group">
-      <label>Notes / Special Requests</label>
-      <textarea name="notes" placeholder="Any health preferences or focus areas"></textarea>
-    </div>
-    <button type="submit" class="btn2" style="width:100%;border:none;cursor:pointer">Send Request</button>
-  </form>
-  <p class="note center" id="formMsg" style="display:none;color:#1a2e26;font-weight:600;margin-top:12px"></p>
-
-  <h2>Booking & Payment</h2>
-  <p>Full payment is required to confirm your appointment. Payment details (Zelle, Interac e-Transfer, SEPA Bank Transfer, or Cash) will be provided based on your region once we confirm the time and location.</p>
-
-  <h2>Cancellation & Refund Policy</h2>
-  <div class="policy">
-    <ul>
-      <li><strong>24-hour notice</strong> required for cancellations or rescheduling.</li>
-      <li>Cancellations made less than 24 hours before the appointment are non-refundable.</li>
-      <li>No-shows are charged the full session fee.</li>
-      <li>If I need to cancel for any reason, you will receive a full refund or priority rebooking.</li>
-    </ul>
-  </div>
-
-  <h2>Contact</h2>
-  <p class="center">
-    Fastest response: <a href="https://t.me/KenzyRedHi" target="_blank">Telegram</a> or <a href="https://services.zangi.com/dl/conversation/7836541374" target="_blank">Zangi</a><br>
-    Zangi private number: <strong>7836541374</strong>
-  </p>
-
-</div>
-
-<div class="footer">
-  Global Home Massage • USA • Canada • Germany<br>
-  This website is for informational and booking enquiry purposes.
-</div>
-
-<script>
-  function switchRegion(regionId, evt) {
-    document.querySelectorAll('.region-content').forEach(el => el.classList.remove('active'));
-    document.querySelectorAll('.region-btn').forEach(el => el.classList.remove('active'));
-    
-    document.getElementById(regionId).classList.add('active');
-    evt.currentTarget.classList.add('active');
-  }
-
-  function handleSubmit(e) {
-    e.preventDefault();
-    const form = e.target;
-    const data = new FormData(form);
-    const name = data.get('name');
-    const country = data.get('country');
-    const datetime = data.get('datetime');
-    const service = data.get('service');
-    const location = data.get('location');
-    const notes = data.get('notes') || 'None';
-
-    const msg = document.getElementById('formMsg');
-    msg.style.display = 'block';
-    msg.textContent = 'Thank you, ' + name + '! Your request has been noted. Please also message me on Telegram or Zangi to confirm.';
-
-    const text = encodeURIComponent(
-      `New global booking request:\nName: ${name}\nCountry: ${country}\nDate/Time: ${datetime}\nService: ${service}\nLocation: ${location}\nNotes: ${notes}`
-    );
-    window.open('https://t.me/KenzyRedHi?text=' + text, '_blank');
-
-    form.reset();
-  }
-</script>
-</body>
-    </ht<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Kenzie Massage | Book Online</title>
-<style>
-  *{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
-  body{background:#faf9f6;color:#1a1a1a;line-height:1.5}
-  header{background:#fff;padding:24px 20px;text-align:center;border-bottom:1px solid #eae5df;position:sticky;top:0;z-index:10}
-  header h1{font-size:22px;font-weight:600;letter-spacing:-0.3px;color:#1a1a1a}
-  header p{font-size:13px;color:#666;margin-top:4px}
-  .container{max-width:540px;margin:24px auto 40px;padding:0 16px}
-  
-  .section-title{font-size:15px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:#777;margin:24px 0 12px}
-  
-  /* Region Tabs */
-  .region-tabs{display:flex;background:#eee6dc;padding:4px;border-radius:10px;margin-bottom:16px}
-  .region-btn{flex:1;background:transparent;border:none;padding:10px;border-radius:8px;font-weight:600;cursor:pointer;color:#555;font-size:13px;transition:all 0.2s}
-  .region-btn.active{background:#fff;color:#1a1a1a;box-shadow:0 2px 8px rgba(0,0,0,.06)}
-  .region-content{display:none}
-  .region-content.active{display:block}
-
-  /* Service Cards selection style */
-  .service-list{display:flex;flex-direction:column;gap:10px}
-  .service-card{background:#fff;border:1px solid #e8e2db;padding:16px 18px;border-radius:12px;cursor:pointer;transition:all 0.2s;display:flex;justify-content:space-between;align-items:center}
-  .service-card:hover{border-color:#1a1a1a}
-  .service-card.selected{border:2px solid #1a1a1a;background:#fffdfa}
-  .service-info h3{font-size:16px;font-weight:600;color:#1a1a1a;margin-bottom:2px}
-  .service-info p{font-size:13px;color:#666}
-  .service-price{font-weight:600;font-size:16px;color:#1a1a1a}
-
-  /* Form & Inputs */
-  .card-box{background:#fff;border:1px solid #e8e2db;border-radius:14px;padding:20px;margin-top:16px}
-  .form-group{margin-bottom:14px}
-  label{display:block;font-weight:500;margin-bottom:6px;font-size:13px;color:#555}
-  input,select,textarea{width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:15px;background:#faf9f6}
-  input:focus,select:focus,textarea:focus{outline:none;border-color:#1a1a1a;background:#fff}
-  textarea{height:90px;resize:vertical}
-
-  .btn{display:block;width:100%;text-align:center;background:#1a1a1a;color:#fff;padding:16px;border-radius:10px;text-decoration:none;font-weight:600;font-size:16px;border:none;cursor:pointer;margin-top:20px;transition:background 0.2s}
-  .btn:hover{background:#333}
-  
-  .social-links{display:flex;gap:10px;margin-top:12px}
-  .btn-alt{flex:1;text-align:center;background:#fff;color:#1a1a1a;border:1px solid #ddd;padding:12px;border-radius:8px;text-decoration:none;font-weight:600;font-size:13px}
-  
-  .footer{text-align:center;padding:30px 20px;color:#888;font-size:12px}
-  .note{font-size:12px;color:#666;margin-top:8px}
-</style>
-</head>
 <body>
 
 <header>
-  <h1>Kenzie Massage</h1>
-  <p>Professional Therapeutic & Mobile Spa Services</p>
+  <h1>KENZY</h1>
+  <h2 class="gold">MASSAGE & WELLNESS</h2>
+  <p>Relaxation • Rejuvenation • Personal Wellness</p>
+  <p>Professional massage services in the comfort of your home.</p>
 </header>
 
-<div class="container">
+<nav>
+  <a href="#home">Home</a>
+  <a href="#services">Services</a>
+  <a href="#booking">Book Now</a>
+  <a href="#contact">Contact</a>
+</nav>
 
-  <div class="section-title">1. Select Your Region</div>
-  <div class="region-tabs">
-    <button class="region-btn active" onclick="switchRegion('usa')">🇺🇸 USA (USD)</button>
-    <button class="region-btn" onclick="switchRegion('canada')">🇨🇦 Canada (CAD)</button>
-    <button class="region-btn" onclick="switchRegion('germany')">🇩🇪 Germany (EUR)</button>
-  </div>
+<main class="container" id="home">
 
-  <!-- USA Pricing / Content -->
-  <div id="usa" class="region-content active">
-    <div class="section-title">2. Choose Service & Duration</div>
-    <div class="service-list">
-      <div class="service-card" onclick="selectService(this, '60 min Swedish (USA)', '$120')">
-        <div class="service-info">
-          <h3>60 min Swedish Massage</h3>
-          <p>Full-body relaxation flow</p>
-        </div>
-        <div class="service-price">$120</div>
-      </div>
-      <div class="service-card" onclick="selectService(this, '90 min Deep Tissue (USA)', '$170')">
-        <div class="service-info">
-          <h3>90 min Deep Tissue</h3>
-          <p>Most Popular • Target knots & tension</p>
-        </div>
-        <div class="service-price">$170</div>
-      </div>
-      <div class="service-card" onclick="selectService(this, '120 min Custom (USA)', '$220')">
-        <div class="service-info">
-          <h3>120 min Full Recovery</h3>
-          <p>Extended comprehensive session</p>
-        </div>
-        <div class="service-price">$220</div>
-      </div>
-    </div>
-  </div>
+<h2 class="section-title">Welcome to Kenzy</h2>
+<p class="intro">
+Explore our massage and wellness treatments. Tap any service
+to discover its description, purpose, recommended duration,
+pricing and important information before making a booking.
+</p>
 
-  <!-- Canada Pricing / Content -->
-  <div id="canada" class="region-content">
-    <div class="section-title">2. Choose Service & Duration</div>
-    <div class="service-list">
-      <div class="service-card" onclick="selectService(this, '60 min Swedish (Canada)', '$160 CAD')">
-        <div class="service-info">
-          <h3>60 min Swedish Massage</h3>
-          <p>Full-body relaxation flow</p>
-        </div>
-        <div class="service-price">$160 CAD</div>
-      </div>
-      <div class="service-card" onclick="selectService(this, '90 min Deep Tissue (Canada)', '$225 CAD')">
-        <div class="service-info">
-          <h3>90 min Deep Tissue</h3>
-          <p>Most Popular • Target knots & tension</p>
-        </div>
-        <div class="service-price">$225 CAD</div>
-      </div>
-      <div class="service-card" onclick="selectService(this, '120 min Custom (Canada)', '$290 CAD')">
-        <div class="service-info">
-          <h3>120 min Full Recovery</h3>
-          <p>Extended comprehensive session</p>
-        </div>
-        <div class="service-price">$290 CAD</div>
-      </div>
-    </div>
-  </div>
+<h2 class="section-title" id="services">Explore Our Treatments</h2>
+<p class="intro">Select a category or explore all available treatments.</p>
 
-  <!-- Germany Pricing / Content -->
-  <div id="germany" class="region-content">
-    <div class="section-title">2. Choose Service & Duration</div>
-    <div class="service-list">
-      <div class="service-card" onclick="selectService(this, '60 min Swedish (Germany)', '€110')">
-        <div class="service-info">
-          <h3>60 min Swedish Massage</h3>
-          <p>Full-body relaxation flow</p>
-        </div>
-        <div class="service-price">€110</div>
-      </div>
-      <div class="service-card" onclick="selectService(this, '90 min Deep Tissue (Germany)', '€155')">
-        <div class="service-info">
-          <h3>90 min Deep Tissue</h3>
-          <p>Most Popular • Target knots & tension</p>
-        </div>
-        <div class="service-price">€155</div>
-      </div>
-      <div class="service-card" onclick="selectService(this, '120 min Custom (Germany)', '€200')">
-        <div class="service-info">
-          <h3>120 min Full Recovery</h3>
-          <p>Extended comprehensive session</p>
-        </div>
-        <div class="service-price">€200</div>
-      </div>
-    </div>
-  </div>
+<div class="categories" id="categories"></div>
+<div class="grid" id="serviceGrid"></div>
 
-  <div class="section-title">3. Appointment & Contact Details</div>
-  <div class="card-box">
-    <form onsubmit="handleSubmit(event)">
-      <div class="form-group">
-        <label>Selected Service</label>
-        <input type="text" id="selectedServiceDisplay" readonly value="Tap a service above to select" required style="background:#eee;color:#333;font-weight:600">
-      </div>
-      <div class="form-group">
-        <label>Your Full Name</label>
-        <input type="text" name="name" required placeholder="e.g. John Doe">
-      </div>
-      <div class="form-group">
-        <label>Preferred Date & Time</label>
-        <input type="text" name="datetime" required placeholder="e.g. Sat 15 Nov, 3:00 PM">
-      </div>
-      <div class="form-group">
-        <label>Location (Hotel, Apartment or Neighborhood)</label>
-        <input type="text" name="location" required placeholder="e.g. Manhattan, NY or Berlin-Mitte">
-      </div>
-      <div class="form-group">
-        <label>Notes / Health Requests</label>
-        <textarea name="notes" placeholder="Any specific focus areas or preferences"></textarea>
-      </div>
-      <button type="submit" class="btn">Proceed to Confirmation</button>
-    </form>
-  </div>
+<h2 class="section-title" id="booking">Book Your Appointment</h2>
 
-  <div class="section-title" style="margin-top:30px">Quick Direct Contact</div>
-  <div class="social-links">
-    <a href="https://t.me/KenzyRedHi" class="btn-alt" target="_blank">💬 Telegram</a>
-    <a href="https://services.zangi.com/dl/conversation/7836541374" class="btn-alt" target="_blank">📱 Zangi (7836541374)</a>
-  </div>
+<div class="card">
+<form id="bookingForm">
 
+<label>Full Name</label>
+<input id="name" required placeholder="Your full name">
+
+<label>Email Address</label>
+<input id="email" type="email" required placeholder="Your email">
+
+<label>Country</label>
+<input id="country" required placeholder="Your country">
+
+<label>State / City</label>
+<input id="location" required placeholder="Your state or city">
+
+<label>Choose Massage</label>
+<select id="massage" required>
+<option value="">Select a massage</option>
+</select>
+
+<label>Session Duration</label>
+<select id="duration">
+<option value="30">30 minutes</option>
+<option value="60" selected>60 minutes</option>
+<option value="90">90 minutes</option>
+<option value="120">120 minutes</option>
+</select>
+
+<label>Appointment Date</label>
+<input type="date" id="date" required>
+
+<label>Appointment Time</label>
+<input type="time" id="time" required>
+
+<label>Additional Information</label>
+<textarea id="notes" rows="4"
+placeholder="Your preferences or special requests"></textarea>
+
+<div class="price-box">
+<p>Selected treatment: <strong id="selectedName">Not selected</strong></p>
+<p>Duration: <strong id="selectedDuration">60 minutes</strong></p>
+<p>Estimated session price:</p>
+<div class="price" id="total">$0.00</div>
+<small>Prices are illustrative USD rates. Final prices and availability require confirmation.</small>
 </div>
 
-<div class="footer">
-  Kenzie Massage • Private Mobile Service<br>
-  Secure booking & confirmation via direct message
+<button type="submit" style="width:100%;margin-top:18px">
+Submit Booking Request
+</button>
+
+</form>
+
+<div id="bookingResult" class="price-box" hidden>
+<h3>Booking request prepared</h3>
+<p id="bookingMessage"></p>
+<button type="button" onclick="copyBooking()">Copy Booking Details</button>
 </div>
+</div>
+
+<h2 class="section-title" id="contact">Private Correspondence</h2>
+
+<div class="card">
+<p class="intro">
+For confidential inquiries and appointment arrangements,
+contact Kenzy through the following platforms.
+</p>
+
+<a class="contact-link"
+href="https://services.zangi.com/dl/conversation/7836541374"
+target="_blank" rel="noopener">
+Contact Kenzy on Zangi
+</a>
+
+<a class="contact-link telegram"
+href="https://t.me/KenzyRedHi"
+target="_blank" rel="noopener">
+Message Kenzy on Telegram
+</a>
+
+<p style="text-align:center">
+Zangi: 7836541374<br>
+Telegram: @KenzyRedHi
+</p>
+</div>
+
+</main>
+
+<!-- INDIVIDUAL MASSAGE DETAILS -->
+
+<div class="modal" id="detailsModal">
+<div class="modal-content">
+
+<button class="close" onclick="closeDetails()">×</button>
+
+<h2 id="detailName"></h2>
+<p id="detailCategory" class="gold"></p>
+
+<p class="detail-label">About this treatment</p>
+<p id="detailDescription"></p>
+
+<p class="detail-label">Purpose and potential benefits</p>
+<p id="detailBenefits"></p>
+
+<p class="detail-label">Who may benefit?</p>
+<p id="detailSuitable"></p>
+
+<p class="detail-label">Important considerations</p>
+<p id="detailSafety"></p>
+
+<div class="detail-price">
+<strong>Session pricing</strong>
+<p id="detailPrices"></p>
+</div>
+
+<button style="width:100%" onclick="bookThisMassage()">
+Book This Massage
+</button>
+
+</div>
+</div>
+
+<footer>
+<h2>KENZY MASSAGE & WELLNESS</h2>
+<p>Professional Care • Comfort • Wellness</p>
+<p>Appointments subject to confirmation.</p>
+<p>© 2026 Kenzy. All Rights Reserved.</p>
+</footer>
 
 <script>
-  let chosenService = '';
 
-  function switchRegion(regionId) {
-    document.querySelectorAll('.region-content').forEach(el => el.classList.remove('active'));
-    document.querySelectorAll('.region-btn').forEach(el => el.classList.remove('active'));
-    
-    document.getElementById(regionId).classList.add('active');
-    event.currentTarget.classList.add('active');
-  }
+// MASSAGE SERVICES DATABASE
 
-  function selectService(element, serviceName, price) {
-    // Remove selected from all cards
-    document.querySelectorAll('.service-card').forEach(card => card.classList.remove('selected'));
-    // Add to clicked card
-    element.classList.add('selected');
-    
-    chosenService = serviceName + ' (' + price + ')';
-    document.getElementById('selectedServiceDisplay').value = chosenService;
-  }
+const services = {
 
-  function handleSubmit(e) {
-    e.preventDefault();
-    if (!chosenService) {
-      alert('Please select a service option from the list above first.');
-      return;
-    }
-    
-    const form = e.target;
-    const name = form.name.value;
-    const datetime = form.datetime.value;
-    const location = form.location.value;
-    const notes = form.notes.value || 'None';
+"Relaxation & Traditional": [
+"Swedish Massage","Relaxation Massage","Aromatherapy Massage",
+"Hot Stone Massage","Deep Tissue Massage","Full Body Massage",
+"Back, Neck & Shoulder Massage","Head & Scalp Massage",
+"Foot Massage","Hand Massage","Sports Massage","Chair Massage",
+"Trigger Point Massage","Myofascial Release Massage",
+"Therapeutic Massage"
+],
 
-    const text = encodeURIComponent(
-      `New Booking Request:\nService: ${chosenService}\nName: ${name}\nDate/Time: ${datetime}\nLocation: ${location}\nNotes: ${notes}`
-    );
-    window.open('https://t.me/KenzyRedHi?text=' + text, '_blank');
-  }
+"Asian & Traditional": [
+"Thai Massage","Shiatsu Massage","Tui Na Massage",
+"Balinese Massage","Japanese Anma Massage","Ayurvedic Massage",
+"Abhyanga Massage","Indian Head Massage",
+"Thai Herbal Compress Massage","Amma Massage","Tok Sen Massage",
+"Lomi Lomi Massage","Hawaiian Massage","Korean Massage",
+"Traditional Chinese Massage"
+],
+
+"Specialty & Luxury": [
+"Tantra Massage","Nuru Massage","Four-Hand Massage",
+"Couples Massage","Chocolate Massage","Coffee Massage",
+"Candle Massage","Milk & Honey Massage","Bamboo Massage",
+"Sandalwood Massage","Gold Massage","Jade Stone Massage",
+"Himalayan Salt Stone Massage","Ice Massage",
+"Sound Therapy Massage"
+],
+
+"Sports & Recovery": [
+"Athletic Recovery Massage","Pre-Event Sports Massage",
+"Post-Event Sports Massage","Compression Massage",
+"Lymphatic Drainage Massage","Cupping Massage",
+"Gua Sha Massage","Reflexology","Prenatal Massage",
+"Postnatal Massage","Pregnancy-Safe Relaxation Massage",
+"Rehabilitation Massage","Manual Lymphatic Therapy",
+"Stretching Massage","Percussion Massage"
+],
+
+"Beauty & Body": [
+"Facial Massage","Kobido Facial Massage","Buccal Facial Massage",
+"Anti-Cellulite Massage","Body Sculpting Massage",
+"Slimming Massage","Detox Massage","Exfoliating Body Massage",
+"Hot Oil Massage","Herbal Oil Massage","Scalp & Hair Massage",
+"Foot Reflexology","Abdominal Massage","Dry Brushing Treatment",
+"Body Polish Treatment"
+],
+
+"Regional & Indigenous": [
+"African Traditional Massage","Moroccan Hammam Massage",
+"Turkish Massage","Russian Sports Massage",
+"Egyptian Herbal Massage","Polynesian Massage",
+"Hawaiian Lomilomi","Tibetan Ku Nye Massage",
+"Filipino Hilot Massage","Indonesian Javanese Massage",
+"Burmese Traditional Massage","Vietnamese Massage",
+"Cambodian Khmer Massage","Nepalese Traditional Massage"
+]
+
+};
+
+// PREMIUM BASE PRICES PER 60-MINUTE SESSION
+
+const rates = {
+"Relaxation & Traditional":150,
+"Asian & Traditional":180,
+"Specialty & Luxury":250,
+"Sports & Recovery":200,
+"Beauty & Body":175,
+"Regional & Indigenous":180
+};
+
+const multipliers = {
+30:0.60,
+60:1,
+90:1.40,
+120:1.80
+};
+
+const categoryDescriptions = {
+"Relaxation & Traditional":
+"Traditional massage approaches using techniques such as flowing strokes, kneading and focused pressure to support relaxation and muscle comfort.",
+
+"Asian & Traditional":
+"Massage traditions originating from different Asian cultures. Depending on the method, treatments may involve assisted stretching, rhythmic pressure or traditional bodywork techniques.",
+
+"Specialty & Luxury":
+"Specialty spa experiences using distinctive techniques, textures, oils or wellness rituals. Tantra is presented as a non-sexual, consent-based relaxation practice. Nuru is a specialized gel-based massage offered only where lawful and within professional boundaries.",
+
+"Sports & Recovery":
+"Bodywork and recovery-focused techniques intended to support muscle comfort, mobility and relaxation. Treatment should be adapted to the client's physical condition.",
+
+"Beauty & Body":
+"Beauty and body treatments focused on skin care, facial relaxation, body comfort and cosmetic wellness.",
+
+"Regional & Indigenous":
+"Traditional bodywork practices inspired by different regional and cultural wellness traditions. Methods vary by practitioner and training."
+};
+
+const safetyText =
+"Discuss injuries, pregnancy, allergies, skin conditions, recent surgery and other relevant health concerns before treatment. Some treatments are not suitable for everyone. Services are professional, consensual and non-sexual.";
+
+let currentService = null;
+let currentBookingText = "";
+
+// CREATE CATEGORY FILTERS
+
+const categoryBox = document.getElementById("categories");
+const grid = document.getElementById("serviceGrid");
+const massageSelect = document.getElementById("massage");
+
+function showCategory(category) {
+
+grid.innerHTML = "";
+
+Object.entries(services).forEach(([group,names]) => {
+
+if(category !== "All" && category !== group) return;
+
+names.forEach(name => {
+
+const card = document.createElement("div");
+card.className = "service-card";
+
+const heading = document.createElement("h3");
+heading.textContent = name;
+
+const description = document.createElement("p");
+description.textContent = categoryDescriptions[group];
+
+const price = document.createElement("strong");
+price.textContent = "From $" + rates[group] + " / 60 minutes";
+
+const button = document.createElement("button");
+button.textContent = "Explore Treatment →";
+button.onclick = () => openDetails(name,group);
+
+card.append(heading,description,price,button);
+grid.appendChild(card);
+
+});
+
+});
+
+document.querySelectorAll(".categories button").forEach(btn => {
+btn.classList.toggle("active",btn.dataset.category === category);
+});
+
+}
+
+// BUILD CATEGORY BUTTONS
+
+["All",...Object.keys(services)].forEach(category => {
+
+const button = document.createElement("button");
+button.textContent = category;
+button.dataset.category = category;
+button.onclick = () => showCategory(category);
+
+categoryBox.appendChild(button);
+
+});
+
+// BUILD BOOKING DROPDOWN
+
+Object.entries(services).forEach(([group,names]) => {
+
+const optgroup = document.createElement("optgroup");
+optgroup.label = group;
+
+names.forEach(name => {
+const option = document.createElement("option");
+option.value = name;
+option.textContent = name;
+optgroup.appendChild(option);
+});
+
+massageSelect.appendChild(optgroup);
+
+});
+
+// INDIVIDUAL MASSAGE DETAILS
+
+function openDetails(name,group) {
+
+currentService = {name,group};
+
+document.getElementById("detailName").textContent = name;
+document.getElementById("detailCategory").textContent = group;
+
+document.getElementById("detailDescription").textContent =
+name + " is offered as part of our " + group.toLowerCase() +
+" collection. The treatment is adapted to the client's comfort,
+preferences and the practitioner's professional training.";
+
+document.getElementById("detailBenefits").textContent =
+categoryDescriptions[group];
+
+document.getElementById("detailSuitable").textContent =
+"Clients seeking the type of relaxation or wellness experience
+associated with this treatment, subject to individual suitability.";
+
+document.getElementById("detailSafety").textContent = safetyText;
+
+const base = rates[group];
+
+document.getElementById("detailPrices").textContent =
+"30 minutes: $" + (base*multipliers[30]).toFixed(2) +
+" | 60 minutes: $" + base +
+" | 90 minutes: $" + (base*multipliers[90]).toFixed(2) +
+" | 120 minutes: $" + (base*multipliers[120]).toFixed(2);
+
+document.getElementById("detailsModal").style.display = "block";
+document.body.style.overflow = "hidden";
+
+}
+
+function closeDetails() {
+document.getElementById("detailsModal").style.display = "none";
+document.body.style.overflow = "auto";
+}
+
+function bookThisMassage() {
+
+if(!currentService) return;
+
+massageSelect.value = currentService.name;
+updatePrice();
+closeDetails();
+
+document.getElementById("booking").scrollIntoView({
+behavior:"smooth"
+});
+
+}
+
+// LIVE PRICING
+
+function updatePrice() {
+
+const selected = Object.entries(services).find(
+([group,names]) => names.includes(massageSelect.value)
+);
+
+if(!selected) {
+document.getElementById("total").textContent = "$0.00";
+document.getElementById("selectedName").textContent = "Not selected";
+return;
+}
+
+const [group] = selected;
+const minutes = Number(document.getElementById("duration").value);
+
+const price = rates[group] * multipliers[minutes];
+
+document.getElementById("total").textContent = "$" + price.toFixed(2);
+
+document.getElementById("selectedName").textContent = massageSelect.value;
+
+document.getElementById("selectedDuration").textContent = minutes + " minutes";
+
+}
+
+massageSelect.addEventListener("change",updatePrice);
+document.getElementById("duration").addEventListener("change",updatePrice);
+
+// MINIMUM APPOINTMENT DATE
+
+const dateInput = document.getElementById("date");
+const today = new Date();
+
+dateInput.min = new Date(
+today.getTime()-today.getTimezoneOffset()*60000
+).toISOString().split("T")[0];
+
+// BOOKING REQUEST
+
+document.getElementById("bookingForm").addEventListener("submit",function(e) {
+
+e.preventDefault();
+
+updatePrice();
+
+const booking = {
+Name:document.getElementById("name").value,
+Email:document.getElementById("email").value,
+Country:document.getElementById("country").value,
+Location:document.getElementById("location").value,
+Massage:massageSelect.value,
+Duration:document.getElementById("duration").value+" minutes",
+Date:dateInput.value,
+Time:document.getElementById("time").value,
+Price:document.getElementById("total").textContent,
+Notes:document.getElementById("notes").value
+};
+
+currentBookingText =
+"KENZY MASSAGE BOOKING REQUEST\n\n"+
+Object.entries(booking).map(([key,value]) =>
+key+": "+value
+).join("\n");
+
+document.getElementById("bookingMessage").textContent =
+"Your booking details are ready. Copy the request and send it through Zangi or Telegram for confirmation.";
+
+document.getElementById("bookingResult").hidden = false;
+
+});
+
+function copyBooking() {
+
+if(!currentBookingText) return;
+
+if(navigator.clipboard && window.isSecureContext) {
+navigator.clipboard.writeText(currentBookingText)
+.then(() => alert("Booking details copied."));
+} else {
+alert("Please copy your booking details from the form and contact Kenzy.");
+}
+
+}
+
+// INITIAL DISPLAY
+
+showCategory("All");
+updatePrice();
+
 </script>
 </body>
-  </html>
-        ml>
-  
+</html>
+  olu
